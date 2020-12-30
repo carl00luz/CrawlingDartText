@@ -6,8 +6,8 @@ import os
 from time import sleep
 
 
-def getReportNumbers(key, crp_cd):
-    url = "http://dart.fss.or.kr/api/search.xml?auth=" + key + "&crp_cd=" + crp_cd + "&start_dt=20180101&dsp_tp=A"
+def getReportNumbers(key, crp_cd, date):
+    url = "http://dart.fss.or.kr/api/search.xml?auth=" + key + "&crp_cd=" + crp_cd + "&start_dt=" + date + "&dsp_tp=A"
     request = requests.get(url)
     document = bs4.BeautifulSoup(request.content, 'lxml')
     lst = document.find_all('list')
@@ -55,8 +55,8 @@ def getReport(innerURL):
     return doc
 
 
-def init(key, crp_cd, crp_name):
-    list = getReportNumbers(key, crp_cd)
+def init(key, crp_cd, crp_name, date):
+    list = getReportNumbers(key, crp_cd, date)
     if os.path.isdir(crp_name) == False:
         os.mkdir(crp_name)
     print(crp_name)
@@ -75,11 +75,12 @@ if __name__ == "__main__":
     fs = pd.read_csv('Kospi.csv', header=0)
     companyCodeList, companyNameList = list(fs["종목코드"]), list(fs["기업명"])
     key = "api key를 발급받아 입력하세요"
+    date = "20180101"
 
     for idx in range(len(companyCodeList)):
         if idx == 138:
             break
         if len(str(companyCodeList[idx])) < 6:
             companyCodeList[idx] = str(companyCodeList[idx]).zfill(6)
-        init(key, str(companyCodeList[idx]), companyNameList[idx])
+        init(key, str(companyCodeList[idx]), companyNameList[idx], date)
         # sleep(1)
